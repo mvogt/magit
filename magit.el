@@ -649,9 +649,7 @@ Do not customize this (used in the `magit-key-mode' implementation).")
            str magit-bug-report-url magit-version))
 
 (defun magit-buffer-switch (buf)
-  (if (string-match "magit" (buffer-name))
-      (switch-to-buffer buf)
-    (pop-to-buffer buf)))
+  (pop-to-buffer buf))
 
 ;;; Macros
 
