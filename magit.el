@@ -610,6 +610,7 @@ Do not customize this (used in the `magit-key-mode' implementation).")
     (define-key map (kbd "C") 'magit-add-log)
     (define-key map (kbd "X") 'magit-reset-working-tree)
     (define-key map (kbd "z") 'magit-key-mode-popup-stashing)
+    (define-key map (kbd "C-c C-d") 'magit-difftool-item)
     map))
 
 (defvar magit-log-mode-map
@@ -3505,6 +3506,29 @@ With prefix argument, add remaining untracked files as well.
 \('git reset --mixed HEAD')."
   (interactive)
   (magit-run-git "reset" "HEAD"))
+
+(defun magit-difftool-item ()
+  "Launch difftool on the item at point."
+  (interactive)
+  (magit-section-action (item info "stage")
+    ((untracked *)
+     (error "Can't run difftool on untracked file"))
+    ((unstaged diff)
+     (start-process "git difftool" nil "git" "difftool"
+                    (magit-diff-item-file item)))
+    ((unstaged *)
+     (error "Must select all of a single file to run difftool"))
+    ((staged diff)
+     (start-process "git difftool" nil "git" "difftool" "--cached"
+                    (magit-diff-item-file item)))
+    ((staged *)
+     (error "Must select all of a single file to run difftool"))
+    ((hunk)
+     (error "Can't diff this hunk"))
+    ((diff)
+     (error "Can't diff this (FIXME: What is it?)"))
+  )
+)
 
 ;;; Branches
 
