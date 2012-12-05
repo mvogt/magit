@@ -5434,6 +5434,9 @@ With a prefix arg, do a submodule update --init"
   (let* ((default-directory (magit-get-top-dir default-directory)))
     (magit-start-process "Git Gui" nil magit-git-executable "gui")))
 
+(defvar magit-gitk-load-limit 10000
+  "Maximum number of commits for gitk to load into memory.")
+
 (defun magit-run-gitk ()
   "Run `gitk --all' for the current git repository"
   (interactive)
@@ -5458,9 +5461,13 @@ With a prefix arg, do a submodule update --init"
                         (getenv "PATH")
                         (replace-regexp-in-string "/" "\\\\" git-bin-dir))
                 process-environment))
-        (magit-start-process "Gitk" nil "sh" magit-gitk-executable "--all")))
+        (magit-start-process "Gitk" nil "sh" magit-gitk-executable
+                             (format "--max-count=%d" magit-gitk-load-limit)
+                             "--all")))
      (t
-      (magit-start-process "Gitk" nil magit-gitk-executable "--all")))))
+      (magit-start-process "Gitk" nil magit-gitk-executable
+                           (format "--max-count=%d" magit-gitk-load-limit)
+                           "--all")))))
 
 (defun magit-load-config-extensions ()
   "Try to load magit extensions that are defined at git config
