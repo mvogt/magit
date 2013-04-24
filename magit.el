@@ -1497,6 +1497,12 @@ see `magit-insert-section' for meaning of the arguments"
 (defun magit-goto-section (section)
   (goto-char (magit-section-beginning section))
   (cond
+   ((and (> (magit-section-end section) (window-end))
+         (or (eq (magit-section-type section) 'diff)
+             (eq (magit-section-type section) 'hunk)))
+    (goto-char (magit-section-end section))
+    (recenter -1)
+    (goto-char (magit-section-beginning section)))
    ((and magit-log-auto-more
          (eq (magit-section-type section) 'longer))
     (magit-log-show-more-entries)
